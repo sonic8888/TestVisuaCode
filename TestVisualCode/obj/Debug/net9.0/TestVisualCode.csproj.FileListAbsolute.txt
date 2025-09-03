@@ -1,0 +1,14 @@
+d:\ProjectsC\TestVisuaCode\TestVisualCode\bin\Debug\net9.0\TestVisualCode.exe
+d:\ProjectsC\TestVisuaCode\TestVisualCode\bin\Debug\net9.0\TestVisualCode.deps.json
+d:\ProjectsC\TestVisuaCode\TestVisualCode\bin\Debug\net9.0\TestVisualCode.runtimeconfig.json
+d:\ProjectsC\TestVisuaCode\TestVisualCode\bin\Debug\net9.0\TestVisualCode.dll
+d:\ProjectsC\TestVisuaCode\TestVisualCode\bin\Debug\net9.0\TestVisualCode.pdb
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.GeneratedMSBuildEditorConfig.editorconfig
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.AssemblyInfoInputs.cache
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.AssemblyInfo.cs
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.csproj.CoreCompileInputs.cache
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.dll
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\refint\TestVisualCode.dll
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.pdb
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\TestVisualCode.genruntimeconfig.cache
+d:\ProjectsC\TestVisuaCode\TestVisualCode\obj\Debug\net9.0\ref\TestVisualCode.dll
