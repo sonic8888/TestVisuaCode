@@ -5,10 +5,28 @@ namespace TestVisualCode;
 
 public class SqliteDb : Idb, IDisposable
 {
-    public SqliteConnection Connection { get; set; }
-    public SqliteDb(string connectionString)
+    public SqliteConnection? Connection { get; set; }
+    public string StrConnection { get; set; }
+    public SqliteDb(string soursDb)
     {
-        Connection = new SqliteConnection(connectionString);
+        StrConnection = GetConnectionString(soursDb);
+        Connection = GetConnection();
+    }
+
+    private SqliteConnection? GetConnection()
+    {
+        SqliteConnection connection;
+        try
+        {
+            connection = new SqliteConnection(StrConnection);
+        }
+        catch (System.ArgumentException)
+        {
+
+            throw new System.ArgumentException("Не удалось подключиться к БД.");
+        }
+        return connection;
+
     }
 
     public void Dispose()
@@ -19,24 +37,61 @@ public class SqliteDb : Idb, IDisposable
         }
     }
 
-    public IEnumerable<T> Read<T>(string sql, Func<T> fu, IEnumerable<SqliteParameter> sqliteParameters)
+    public IEnumerable<IEnumerable<T>> Read<T>(string sql, Func<SqliteDataReader, IEnumerable<T>> fu, IEnumerable<SqliteParameter> sqliteParameters)
     {
-        Connection.Open();
-        SqliteCommand command = new SqliteCommand(sql, Connection);
-        command.Parameters.AddRange(sqliteParameters);
-        using (SqliteDataReader reader = command.ExecuteReader())
+        List<IEnumerable<T>> list = new List<IEnumerable<T>>();
+        try
         {
-            foreach (var item in reader)
+            Connection?.Open();
+            SqliteCommand command = new SqliteCommand(sql, Connection);
+            command.Parameters.AddRange(sqliteParameters);
+            using (SqliteDataReader reader = command.ExecuteReader())
             {
-                yield return fu();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var res = fu(reader);
+                        list.Add(res);
+                    }
+                }
             }
+
         }
-        Connection.Close();
+
+        finally
+        {
+
+            Connection?.Close();
+        }
+        return list;
     }
 
-    public int Read(string sql, Func<int> fu, IEnumerable<SqliteParameter> sqliteParameters)
+    public int Read(string sql, IEnumerable<SqliteParameter> sqliteParameters)
     {
-        throw new NotImplementedException();
+        int count = 0;
+        try
+        {
+            Connection?.Open();
+            SqliteCommand command = new SqliteCommand(sql, Connection);
+            command.Parameters.AddRange(sqliteParameters);
+            var result = command.ExecuteScalar();
+            if (result != null)
+            {
+                count = Convert.ToInt32(result);
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            Connection?.Close();
+        }
+        return count;
     }
 
     public int Write(string sql, Func<int> fu, IEnumerable<SqliteParameter> sqliteParameters)
@@ -44,7 +99,7 @@ public class SqliteDb : Idb, IDisposable
         throw new NotImplementedException();
     }
 
-    public static string GetConnectionString(string DataSours, string mode = "ReadWriteCreate", string cache = "Default")
+    private string GetConnectionString(string DataSours, string mode = "ReadWriteCreate", string cache = "Default")
     {
         return $"Data Source={DataSours};Mode={mode};Cache={cache}";
     }
