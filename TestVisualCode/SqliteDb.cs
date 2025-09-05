@@ -37,9 +37,9 @@ public class SqliteDb : Idb, IDisposable
         }
     }
 
-    public IEnumerable<IEnumerable<T>> Read<T>(string sql, Func<SqliteDataReader, IEnumerable<T>> fu, IEnumerable<SqliteParameter> sqliteParameters)
+    public IEnumerable<T> Read<T>(string sql, Func<SqliteDataReader, T> fu, IEnumerable<SqliteParameter> sqliteParameters )
     {
-        List<IEnumerable<T>> list = new List<IEnumerable<T>>();
+        List<T> list = new List<T>();
         try
         {
             Connection?.Open();
@@ -118,4 +118,5 @@ public class SqliteDb : Idb, IDisposable
         }
         return sqliteParameters;
     }
+
 }

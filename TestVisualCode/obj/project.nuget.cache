@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UvEaGpavC8s=",
+  "dgSpecHash": "jwOGy6mEgKM=",
   "success": true,
-  "projectFilePath": "D:\\C#Projects\\TestVisualStudio\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
+  "projectFilePath": "D:\\ProjectsC\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sonic\\.nuget\\packages\\microsoft.data.sqlite\\9.0.8\\microsoft.data.sqlite.9.0.8.nupkg.sha512",
     "C:\\Users\\sonic\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.8\\microsoft.data.sqlite.core.9.0.8.nupkg.sha512",

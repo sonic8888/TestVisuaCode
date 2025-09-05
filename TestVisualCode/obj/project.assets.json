@@ -338,11 +338,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\C#Projects\\TestVisualStudio\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
+      "projectUniqueName": "D:\\ProjectsC\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
       "projectName": "TestVisualCode",
-      "projectPath": "D:\\C#Projects\\TestVisualStudio\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
+      "projectPath": "D:\\ProjectsC\\TestVisuaCode\\TestVisualCode\\TestVisualCode.csproj",
       "packagesPath": "C:\\Users\\sonic\\.nuget\\packages\\",
-      "outputPath": "D:\\C#Projects\\TestVisualStudio\\TestVisuaCode\\TestVisualCode\\obj\\",
+      "outputPath": "D:\\ProjectsC\\TestVisuaCode\\TestVisualCode\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

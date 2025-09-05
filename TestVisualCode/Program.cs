@@ -28,9 +28,26 @@ internal class Program
         if (yDb.Connection != null)
         {
 
-            var result = yDb.Read(dic["str1"], SqliteDb.GetSqliteParameters(new[] { ("@value", "5") }));
-            System.Console.WriteLine(result);
+            Func<SqliteDataReader, string[]> fu = reader =>
+            {
+                var arr = new string[3];
+                if (!reader.IsDBNull(0)) arr[0] = reader.GetString(0);
+                if (!reader.IsDBNull(1)) arr[1] = reader.GetString(1);
+                if (!reader.IsDBNull(2)) arr[2] = reader.GetString(2);
+
+
+                return arr;
+            };
+            string sql = "SELECT Title, Year, ArtistsString  FROM T_Album WHERE Id IN (SELECT AlbumId FROM T_TrackAlbum WHERE TrackId IN (SELECT TrackId FROM T_PlaylistTrack WHERE Kind = @value));";
+            var result = yDb.Read(sql, fu, SqliteDb.GetSqliteParameters(new[] { ("@value", "5") }));
+            foreach (var item in result)
+            {
+                Console.WriteLine($"{item[0]};  {item[1]};  {item[2]}");
+            }
         }
 
     }
+
+
+
 }
