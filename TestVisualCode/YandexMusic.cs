@@ -267,8 +267,9 @@ namespace TestVisualCode
 
         //}
 
-        public static List<string> GetTrackId(string data_sours)
+        public static List<string> GetTrackId(string? data_sours)
         {
+            if (data_sours == null) throw new ArgumentException($"БД:{data_sours} не обнаружена.");
             var trackId = new List<string>();
             SqliteDb? db = null;
             try
@@ -276,7 +277,7 @@ namespace TestVisualCode
                 db = new SqliteDb(data_sours);
                 if (db.Connection != null)
                 {
-                    var result = db.Read(Tools.Sql_queries["SelectTrackId"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", Tools.Kind) }));
+                    var result = db.Read(Tools.Sql_queries["SelectTrackIdYandex"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", Tools.Kind) }));
                     foreach (var item in result)
                     {
                         trackId.Add(item[0]);
@@ -313,6 +314,14 @@ namespace TestVisualCode
             }
             return is_exist;
         }
+        
+        /// <summary>
+        /// Получаем треки из Яндекс БД.
+        /// </summary>
+        /// <param name="trackId">trackId трека</param>
+        /// <param name="data_sours">Полное имя Яндекс БД</param>
+        /// <param name="path_dir">Путь к папке в Яндекс Музыка где находятся аудио_файлы</param>
+        /// <returns>Список траков</returns>
         public static List<Track> GetTracks(List<string> trackId, string data_sours, string path_dir)
         {
             var track_list = new List<Track>();

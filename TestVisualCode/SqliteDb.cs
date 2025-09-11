@@ -7,7 +7,7 @@ public class SqliteDb : Idb, IDisposable
 {
     public SqliteConnection? Connection { get; set; }
     public string StrConnection { get; set; }
-    private static string nameDb = "my_music.sqlite";
+    public static string nameDb = "my_music.sqlite";
     public SqliteDb(string soursDb)
     {
         StrConnection = GetConnectionString(soursDb);
@@ -113,7 +113,7 @@ public class SqliteDb : Idb, IDisposable
 
     public int Write(string sql, IEnumerable<SqliteParameter>? sqliteParameters = null)
     {
-        int rows = 0;
+        int rows = -1;
         try
         {
             Connection?.Open();
@@ -140,7 +140,7 @@ public class SqliteDb : Idb, IDisposable
     {
         return $"Data Source={DataSours};Mode={mode};Cache={cache}";
     }
-    public static List<SqliteParameter> GetSqliteParameters(IEnumerable<(string, string)> parameters)
+    public static List<SqliteParameter> GetSqliteParameters(IEnumerable<(string, string?)> parameters)
     {
         List<SqliteParameter> sqliteParameters = new List<SqliteParameter>();
         if (parameters != null)
@@ -149,28 +149,34 @@ public class SqliteDb : Idb, IDisposable
             {
                 if (item.Item1 != null)
                 {
-                    sqliteParameters.Add(new SqliteParameter(item.Item1, item.Item2));
+                    sqliteParameters.Add(new SqliteParameter(item.Item1, item.Item2 ?? "unknown"));
                 }
             }
         }
         return sqliteParameters;
     }
 
-    public static SqliteDb? CreateDB(string pathDir)
+    public static bool CreateDB(string pathDir)
     {
         SqliteDb? db = null;
+        bool isSuccessful = false;
         try
         {
             string dataSours = SqliteDb.GetNameDbDefault(pathDir);
             db = new SqliteDb(dataSours);
             db.Write(Tools.Sql_queries["CreateTables"]);
+            isSuccessful = true;
         }
         catch (System.Exception ex)
         {
-            db?.Dispose();
             Tools.DisplayColor(ex.Message, ConsoleColor.Red);
         }
-        return db;
+        finally
+        {
+            db?.Dispose();
+        }
+        return isSuccessful;
+
     }
 
 

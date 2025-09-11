@@ -24,17 +24,7 @@ internal class Program
     static string data_sours = @"C:\Users\sonic\OneDrive\Рабочий стол\musicdb_ca3bd06f5f9004c4044dff0c57e4c09d.sqlite";
     private static void Main(string[] args)
     {
-        var ym = new YandexMusic();
-        var track = YandexMusic.GetTrackId(YandexMusic.PathDBSqlite!);
-        var track_track = YandexMusic.GetTracks(track,YandexMusic.PathDBSqlite!,YandexMusic.PathMusicSours!);
-        foreach (var item in track_track)
-        {
-            System.Console.WriteLine(item);
-            if (!Tools.Copy(item, @"D:\ntest"))
-            {
-                Tools.DisplayColor(item.Title, ConsoleColor.Blue);
-            }
-        }
+      Manager.AddFilesFromYandexToDirDestination();
     }
  
 

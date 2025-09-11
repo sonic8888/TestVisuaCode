@@ -9,16 +9,21 @@ namespace TestVisualCode;
 internal class Tools
 {
     internal static string Kind = "5";
+    internal static string? PathDirDestination = @"D:\test";
+    internal static string? PathDirOther;
     private static string Pattern = @"[\*\|\\\:\""<>\?\/]";
     private static string Target = ".";
     // private static Regex regex = new Regex(Tools.Pattern);
     internal static Dictionary<string, string> Sql_queries = new Dictionary<string, string>
     {
-      {"SelectTrackId", "SELECT TrackId FROM T_PlaylistTrack WHERE Kind = @value;" },
-      {"SelectTitle", "SELECT Title FROM T_Track WHERE Id = @value" },
+      {"SelectTrackIdYandex", "SELECT TrackId FROM T_PlaylistTrack WHERE Kind = @value;" },
+      {"SelectTrackIdDBDestination", "SELECT  TrackId FROM T_Track_Yandex WHERE Sours = @value" },
+      { "SelectTitle", "SELECT Title FROM T_Track WHERE Id = @value" },
       {"SelectAlbumId", "SELECT AlbumId FROM T_TrackAlbum WHERE TrackId = @value;"},
       {"SelectAlbumTitleYearArtist", "SELECT Title, Year, ArtistsString FROM T_Album WHERE Id = @value" },
-      {"CreateTables", "CREATE TABLE T_Track_Yandex (Id  INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE  NOT NULL, Title  VARCHAR, Artist  VARCHAR, Album VARCHAR, Year VARCHAR, TrackId  VARCHAR, ArtistId  VARCHAR, NameArtist   VARCHAR, Data  VARCHAR , Sours VARCHAR DEFAULT ('Yandex'));"}
+      {"CreateTables", "CREATE TABLE T_Track_Yandex (Id  INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE  NOT NULL, Name VARCHAR, Title  VARCHAR, Artist  VARCHAR, Album VARCHAR, Year VARCHAR, TrackId  VARCHAR,  Data  VARCHAR , Sours VARCHAR DEFAULT ('Yandex'));"},
+      {"InsertTrack","INSERT INTO T_Track_Yandex (Name, Title, Artist,Album, Year, TrackId, Data)  VALUES (@name, @title, @artist,@album, @year, @track_id, @data)" },
+      {"DeleteTrack", "DELETE FROM T_Track_Yandex WHERE TrackId = @value" }
     };
 
     internal static string[] MyFu(SqliteDataReader reader, int n)
@@ -82,7 +87,7 @@ internal class Tools
         {
             text = Tools.Normalize(text);
         }
-        string _name = $"{track.Name}({text}).{track.Extension}";
+        string _name = $"{track.Name}({text}){track.Extension}";
         int n = 0;
         while (File.Exists(Path.Combine(pathDir, _name)))
         {
@@ -100,6 +105,60 @@ internal class Tools
         }
         track.Name = _name;
         return track;
+    }
+    public static bool IsAudio(FileInfo file)
+    {
+        if (file == null) return false;
+        if (file.Extension.ToLower() == ".mp3" || file.Extension.ToLower() == ".flack" || file.Extension.ToLower() == ".wav") { return true; } else return false;
+    }
+
+    // public static SqliteDb? GetDB()
+    // {
+    //     if (Directory.Exists(PathDirDestination))
+    //     {
+    //         if (File.Exists(Path.Combine(PathDirDestination, SqliteDb.nameDb)))
+    //         {
+    //             return new SqliteDb(Path.Combine(PathDirDestination, SqliteDb.nameDb));
+    //         }
+    //         else
+    //         {
+    //             return SqliteDb.CreateDB(PathDirDestination);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         throw new ArgumentException($"Папка назначения:{PathDirDestination} не найдена.");
+    //     }
+
+    // }
+
+    public static List<string> GetTrackId(string? data_sours)
+    {
+        if (data_sours == null) throw new ArgumentException($"БД:{data_sours} не обнаружена.");
+        var trackId = new List<string>();
+        SqliteDb? db = null;
+        try
+        {
+            db = new SqliteDb(data_sours);
+            if (db.Connection != null)
+            {
+                var result = db.Read(Tools.Sql_queries["SelectTrackIdDBDestination"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", "Yandex") }));
+                foreach (var item in result)
+                {
+                    trackId.Add(item[0]);
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            Tools.DisplayColor(ex.Message, ConsoleColor.Red);
+        }
+        finally
+        {
+            db?.Dispose();
+        }
+        return trackId;
     }
 
 

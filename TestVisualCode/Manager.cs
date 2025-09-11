@@ -1,14 +1,8 @@
-using Microsoft.Data.Sqlite;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data.Common;
+using System.Security.Authentication.ExtendedProtection;
 using System.Text.RegularExpressions;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using TagLib.Ape;
-using TagLib.Matroska;
+using Microsoft.Data.Sqlite;
 
 namespace TestVisualCode
 {
@@ -16,16 +10,16 @@ namespace TestVisualCode
     {
         /// <summary>
         /// Путь к папке в которой находятся а-файлы и БД.
-        /// </summary>
-        public static string pathDestination = @"D:\test";
-        public static string Kind = "5";
-        private static string Pattern = @"[\*\|\\\:\""<>\?\/]";
-        private static string Target = ".";
-        private static Regex regex = new Regex(Manager.Pattern);
-        /// <summary>
-        /// Выбор действия
-        /// </summary>
-        static string? action = "";
+        // /// </summary>
+        // public static string pathDestination = @"D:\test";
+        // public static string Kind = "5";
+        // private static string Pattern = @"[\*\|\\\:\""<>\?\/]";
+        // private static string Target = ".";
+        // private static Regex regex = new Regex(Manager.Pattern);
+        // /// <summary>
+        // /// Выбор действия
+        // /// </summary>
+        // static string? action = "";
 
 
         /// <summary>
@@ -200,29 +194,29 @@ namespace TestVisualCode
         /// </summary>
         /// <param name="message">Текст</param>
         /// <param name="color">ConsoleColor color</param>
-        public static void DisplayColor(string message, System.ConsoleColor color = ConsoleColor.White)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(message);
-            Console.ResetColor();
-        }
+        // public static void DisplayColor(string message, System.ConsoleColor color = ConsoleColor.White)
+        // {
+        //     Console.ForegroundColor = color;
+        //     Console.WriteLine(message);
+        //     Console.ResetColor();
+        // }
 
         /// <summary>
         /// Выводит на консоль элементы последовательности.
         /// </summary>
         /// <typeparam name="T">Тип элемента</typeparam>
         /// <param name="enumerable">Последовательность</param>
-        public static void Display<T>(IEnumerable<T> enumerable)
-        {
-            foreach (T item in enumerable)
-            {
-                Console.WriteLine(item);
-            }
-        }
-        public static void DisplayFileInfo(IEnumerable<FileInfo> fileInfo)
-        {
-            foreach (var item in fileInfo) { Console.WriteLine(item.FullName); }
-        }
+        // public static void Display<T>(IEnumerable<T> enumerable)
+        // {
+        //     foreach (T item in enumerable)
+        //     {
+        //         Console.WriteLine(item);
+        //     }
+        // }
+        // public static void DisplayFileInfo(IEnumerable<FileInfo> fileInfo)
+        // {
+        //     foreach (var item in fileInfo) { Console.WriteLine(item.FullName); }
+        // }
 
 
 
@@ -336,20 +330,20 @@ namespace TestVisualCode
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static string NormalizeName(string? name)
-        {
-            if (name == null) return "";
-            if (regex.IsMatch(name))
-            {
-                string result = regex.Replace(name, Manager.Target);
-                return result;
-            }
-            else
-            {
+        // public static string NormalizeName(string? name)
+        // {
+        //     if (name == null) return "";
+        //     if (regex.IsMatch(name))
+        //     {
+        //         string result = regex.Replace(name, Manager.Target);
+        //         return result;
+        //     }
+        //     else
+        //     {
 
-                return name;
-            }
-        }
+        //         return name;
+        //     }
+        // }
         /// <summary>
         /// Создает объект класса "Track" из аудиофайла.
         /// Извлекает теги аудиофайла и записывает их значение в свойства объекта класса "Track".
@@ -381,11 +375,11 @@ namespace TestVisualCode
         /// </summary>
         /// <param name="file">аудиофайл</param>
         /// <returns>bool</returns>
-        public static bool IsAudio(FileInfo file)
-        {
-            if (file == null) return false;
-            if (file.Extension.ToLower() == ".mp3" || file.Extension.ToLower() == ".flack" || file.Extension.ToLower() == ".wav") { return true; } else return false;
-        }
+        // public static bool IsAudio(FileInfo file)
+        // {
+        //     if (file == null) return false;
+        //     if (file.Extension.ToLower() == ".mp3" || file.Extension.ToLower() == ".flack" || file.Extension.ToLower() == ".wav") { return true; } else return false;
+        // }
 
         /// <summary>
         /// Копирует файл.
@@ -393,24 +387,24 @@ namespace TestVisualCode
         /// <param name="sours">аудиофайл</param>
         /// <param name="PathToDir">папка назначения</param>
         /// <returns>True если копирование прошло удачно.</returns>
-        public static bool Copy(FileInfo sours, string PathToDir)
-        {
-            bool isCopy = false;
-            var file_destination = new FileInfo(Path.Combine(PathToDir, sours.Name));
-            if (!file_destination.Exists)
-            {
-                try
-                {
-                    sours.CopyTo(file_destination.FullName);
-                    isCopy = true;
-                }
-                catch (Exception ex)
-                {
-                    Manager.DisplayColor($"Файл:{sours.Name} - скопировать не удалось. Exception: {ex.Message}", ConsoleColor.Red);
-                }
-            }
-            return isCopy;
-        }
+        // public static bool Copy(FileInfo sours, string PathToDir)
+        // {
+        //     bool isCopy = false;
+        //     var file_destination = new FileInfo(Path.Combine(PathToDir, sours.Name));
+        //     if (!file_destination.Exists)
+        //     {
+        //         try
+        //         {
+        //             sours.CopyTo(file_destination.FullName);
+        //             isCopy = true;
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             Manager.DisplayColor($"Файл:{sours.Name} - скопировать не удалось. Exception: {ex.Message}", ConsoleColor.Red);
+        //         }
+        //     }
+        //     return isCopy;
+        // }
 
 
 
@@ -481,7 +475,53 @@ namespace TestVisualCode
         //     Task task = Manager.AddNewFilesToDestination(pathDir);
         //     task.Wait();
         // }
+        internal static void AddFilesFromYandexToDirDestination()
+        {
+            var tracksIdDifferent = GetTracksIdDifferent();
+            string sours_db = SqliteDb.GetNameDbDefault(Tools.PathDirDestination!);
+            var dbDestination = new SqliteDb(sours_db);
+            try
+            {
+                var tracks = YandexMusic.GetTracks(tracksIdDifferent, YandexMusic.PathDBSqlite!, YandexMusic.PathMusicSours!);
+                var list_error = new List<string>();
+                foreach (var track in tracks)
+                {
+                    var param = SqliteDb.GetSqliteParameters(new (string, string?)[]{("@name",track.Name),("@title",track.Title),
+                   ("@artist",track.Artist),("@album",track.Album),("@year",track.Year), ("@track_id",track.TrackId),("@data",Track.Data()),});
+                    var rows = dbDestination.Write(Tools.Sql_queries["InsertTrack"], param);
+                    if (rows == -1) continue;
+                    if (!Tools.Copy(track, Tools.PathDirDestination!))
+                    {
+                        var param_delete = SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track.TrackId) });
+                        dbDestination.Write(Tools.Sql_queries["DeleteTrack"], param_delete);
+                    }
+                    Tools.DisplayColor(track.Name,ConsoleColor.Green);
+                }
+            }
+            finally
+            {
+                dbDestination.Dispose();
+            }
+        }
 
+        internal static List<string> GetTracksIdDifferent()
+        {
+            if (Tools.PathDirDestination == null) throw new ArgumentException("Путь к папке назначения не задан.");
+            var tracksIdDifferent = new List<string>();
+            var tracksIdDBYandex = YandexMusic.GetTrackId(YandexMusic.PathDBSqlite);
+            if (File.Exists(Path.Combine(Tools.PathDirDestination, SqliteDb.nameDb)))
+            {
+                string soursDbDestination = SqliteDb.GetNameDbDefault(Tools.PathDirDestination);
+                var tracksIdDBDestination = Tools.GetTrackId(soursDbDestination);
+                tracksIdDifferent = tracksIdDBYandex.Except(tracksIdDBDestination).ToList();
+            }
+            else
+            {
+                SqliteDb.CreateDB(Tools.PathDirDestination);
+                tracksIdDifferent = tracksIdDBYandex;
+            }
+            return tracksIdDifferent;
+        }
     }
 }
 

@@ -23,7 +23,7 @@ namespace TestVisualCode
         public string Title
         {
             get { return title; }
-            set { title = Manager.NormalizeName(value); }
+            set { title = value; }
         }
         public string AlbumId { get; set; } = "-1";
 
