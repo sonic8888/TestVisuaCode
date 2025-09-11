@@ -80,7 +80,7 @@ internal class Tools
         return Regex.Replace(text, Tools.Pattern, Tools.Target);
     }
 
-    private static Track Rename(Track track, string pathDir)
+    public static Track Rename(Track track, string pathDir)
     {
         string text = track.Artist ?? track.TrackId;
         if (Tools.isNormalize(text))

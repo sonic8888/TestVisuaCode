@@ -485,17 +485,19 @@ namespace TestVisualCode
                 var tracks = YandexMusic.GetTracks(tracksIdDifferent, YandexMusic.PathDBSqlite!, YandexMusic.PathMusicSours!);
                 var list_error = new List<string>();
                 foreach (var track in tracks)
-                {
-                    var param = SqliteDb.GetSqliteParameters(new (string, string?)[]{("@name",track.Name),("@title",track.Title),
-                   ("@artist",track.Artist),("@album",track.Album),("@year",track.Year), ("@track_id",track.TrackId),("@data",Track.Data()),});
+                { 
+                    var track_rename = Tools.Rename(track, Tools.PathDirDestination!);
+                    var param = SqliteDb.GetSqliteParameters(new (string, string?)[]{("@name",track_rename.Name),("@title",track_rename.Title),
+                   ("@artist",track_rename.Artist),("@album",track_rename.Album),("@year",track_rename.Year), ("@track_id",track_rename.TrackId),("@data",Track.Data()),});
                     var rows = dbDestination.Write(Tools.Sql_queries["InsertTrack"], param);
                     if (rows == -1) continue;
-                    if (!Tools.Copy(track, Tools.PathDirDestination!))
+                    if (!Tools.Copy(track_rename, Tools.PathDirDestination!))
                     {
-                        var param_delete = SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track.TrackId) });
+                        var param_delete = SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track_rename.TrackId) });
                         dbDestination.Write(Tools.Sql_queries["DeleteTrack"], param_delete);
                     }
-                    Tools.DisplayColor(track.Name,ConsoleColor.Green);
+              
+                    Tools.DisplayColor(track_rename.Name,ConsoleColor.Green);
                 }
             }
             finally
