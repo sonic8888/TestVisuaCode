@@ -154,7 +154,7 @@ namespace TestVisualCode
         private static string GetName(Track track) => $"{track.Name}{track.Extension}";
 
         /// <summary>
-        /// Если файл с таким именем уже сужествует то 
+        /// Если файл с таким именем уже существует то 
         /// к имени файла добавляем: (n).
         /// </summary>
         /// <param name="track"></param>
@@ -277,7 +277,7 @@ namespace TestVisualCode
                 db = new SqliteDb(data_sours);
                 if (db.Connection != null)
                 {
-                    var result = db.Read(Tools.Sql_queries["SelectTrackIdYandex"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", Tools.Kind) }));
+                    var result = db.Read(Tools.Sql_queries["SelectTrackIdYandex"], Tools.MyFu, SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", Tools.Kind) }));
                     foreach (var item in result)
                     {
                         trackId.Add(item[0]);
@@ -314,7 +314,7 @@ namespace TestVisualCode
             }
             return is_exist;
         }
-        
+
         /// <summary>
         /// Получаем треки из Яндекс БД.
         /// </summary>
@@ -336,7 +336,7 @@ namespace TestVisualCode
                         try
                         {
                             var track = new Track(item);
-                            var title = db.Read(Tools.Sql_queries["SelectTitle"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", item) }));
+                            var title = db.Read(Tools.Sql_queries["SelectTitle"], Tools.MyFu, SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", item) }));
                             string name_track = title.FirstOrDefault(new[] { "unknown" })[0];
                             if (Tools.isNormalize(name_track))
                             {
@@ -344,11 +344,11 @@ namespace TestVisualCode
                             }
                             track.Name = name_track;
                             track.Title = name_track;
-                            var albumId = db.Read(Tools.Sql_queries["SelectAlbumId"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", item) }));
+                            var albumId = db.Read(Tools.Sql_queries["SelectAlbumId"], Tools.MyFu, SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", item) }));
                             track.AlbumId = albumId.FirstOrDefault(new[] { "unknown" })[0];
                             if (track.AlbumId != "unknown")
                             {
-                                var albumTitleYearArtist = db.Read(Tools.Sql_queries["SelectAlbumTitleYearArtist"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", track.AlbumId) }), 3);
+                                var albumTitleYearArtist = db.Read(Tools.Sql_queries["SelectAlbumTitleYearArtist"], Tools.MyFu, SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track.AlbumId) }), 3);
                                 track.Album = albumTitleYearArtist.FirstOrDefault(new[] { "unknown" })[0];
                                 track.Year = albumTitleYearArtist.FirstOrDefault(new[] { "", "unknown" })[1];
                                 track.Artist = albumTitleYearArtist.FirstOrDefault(new[] { "", "", null })[2];

@@ -8,9 +8,9 @@ namespace TestVisualCode;
 
 internal class Tools
 {
-    internal static string Kind = "5";
+    internal static string? Kind = "5";
     internal static string? PathDirDestination = @"D:\test";
-    internal static string? PathDirOther;
+    internal static string? PathDirOther = @"D:\testDb";
     private static string Pattern = @"[\*\|\\\:\""<>\?\/]";
     private static string Target = ".";
     // private static Regex regex = new Regex(Tools.Pattern);
@@ -23,7 +23,8 @@ internal class Tools
       {"SelectAlbumTitleYearArtist", "SELECT Title, Year, ArtistsString FROM T_Album WHERE Id = @value" },
       {"CreateTables", "CREATE TABLE T_Track_Yandex (Id  INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE  NOT NULL, Name VARCHAR, Title  VARCHAR, Artist  VARCHAR, Album VARCHAR, Year VARCHAR, TrackId  VARCHAR,  Data  VARCHAR , Sours VARCHAR DEFAULT ('Yandex'));"},
       {"InsertTrack","INSERT INTO T_Track_Yandex (Name, Title, Artist,Album, Year, TrackId, Data)  VALUES (@name, @title, @artist,@album, @year, @track_id, @data)" },
-      {"DeleteTrack", "DELETE FROM T_Track_Yandex WHERE TrackId = @value" }
+      {"DeleteTrack", "DELETE FROM T_Track_Yandex WHERE TrackId = @value" },
+      {"InsertTrackFromOther","INSERT INTO T_Track_Yandex (Name, Title, Artist,Album, Year, TrackId, Data, Sours)  VALUES (@name, @title, @artist,@album, @year, @track_id, @data, @sours)" },
     };
 
     internal static string[] MyFu(SqliteDataReader reader, int n)
@@ -41,10 +42,17 @@ internal class Tools
     /// </summary>
     /// <param name="message">Текст</param>
     /// <param name="color">ConsoleColor color</param>
-    public static void DisplayColor(string message, System.ConsoleColor color = ConsoleColor.White)
+    public static void DisplayColor(string message, System.ConsoleColor color = ConsoleColor.White, bool isLine = true)
     {
         Console.ForegroundColor = color;
-        Console.WriteLine(message);
+        if (isLine)
+        {
+            Console.WriteLine(message);
+        }
+        else
+        {
+            Console.Write($"{message}: ");
+        }
         Console.ResetColor();
     }
 
@@ -56,13 +64,13 @@ internal class Tools
         {
             if (!Directory.Exists(dirDestination)) throw new ArgumentException($"папка:{dirDestination} не найдена.");
 
-            track = Rename(track, dirDestination);
             File.Copy(track.PathSours!, Path.Combine(dirDestination, track.Name));
         }
         catch (System.Exception ex)
         {
             isSuccessful = false;
-            Tools.DisplayColor(ex.Message, ConsoleColor.Red);
+            Tools.DisplayColor(ex.Message, ConsoleColor.Red, false);
+            Tools.DisplayColor(track.ToString(), ConsoleColor.Blue);
         }
         return isSuccessful;
     }
@@ -106,6 +114,27 @@ internal class Tools
         track.Name = _name;
         return track;
     }
+
+    public static Track RenameOther(Track track, string pathDir)
+    {
+        string text = track.Artist ?? track.TrackId;
+        string _name = track.Name + track.Extension;
+        int n = 0;
+        while (File.Exists(Path.Combine(pathDir, _name)))
+        {
+            if (n == 0)
+            {
+                _name = $"{track.Name}({text}){track.Extension}";
+            }
+            else
+            {
+                _name = $"{track.Name}({track.TrackId}){track.Extension}";
+            }
+            n++;
+        }
+        track.Name = _name;
+        return track;
+    }
     public static bool IsAudio(FileInfo file)
     {
         if (file == null) return false;
@@ -132,7 +161,7 @@ internal class Tools
 
     // }
 
-    public static List<string> GetTrackId(string? data_sours)
+    public static List<string> GetTrackIds(string? data_sours)
     {
         if (data_sours == null) throw new ArgumentException($"БД:{data_sours} не обнаружена.");
         var trackId = new List<string>();
@@ -142,7 +171,7 @@ internal class Tools
             db = new SqliteDb(data_sours);
             if (db.Connection != null)
             {
-                var result = db.Read(Tools.Sql_queries["SelectTrackIdDBDestination"], Tools.MyFu, SqliteDb.GetSqliteParameters(new[] { ("@value", "Yandex") }));
+                var result = db.Read(Tools.Sql_queries["SelectTrackIdDBDestination"], Tools.MyFu, SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", "Yandex") }));
                 foreach (var item in result)
                 {
                     trackId.Add(item[0]);
@@ -159,6 +188,59 @@ internal class Tools
             db?.Dispose();
         }
         return trackId;
+    }
+
+    public static string GetRandomTrackId(string pathDirDestination)
+    {
+        string sours_db_destination = SqliteDb.GetNameDbDefault(pathDirDestination);
+        var tracksIds = Tools.GetTrackIds(sours_db_destination);
+        int trackId = -1;
+        string other = "other_";
+        do
+        {
+            trackId = new Random().Next() * -1;
+
+        } while (tracksIds.Contains(other + trackId.ToString()));
+        return other + trackId.ToString();
+    }
+
+
+    public static Track? GetTrackFromFile(FileInfo file)
+    {
+        Track? track = null;
+        if (file != null)
+        {
+            try
+            {
+                var trackId = GetRandomTrackId(Tools.PathDirDestination!);
+                track = new Track(trackId);
+                TrackFromTags(track, file);
+                track = RenameOther(track, Tools.PathDirDestination!);
+            }
+            catch (System.Exception)
+            {
+                Tools.DisplayColor("Не удалось создать объект класса Track.", ConsoleColor.Red);
+                return null;
+            }
+        }
+        return track;
+    }
+
+    private static void TrackFromTags(Track track, FileInfo file)
+    {
+        var t_file = TagLib.File.Create(file.FullName);
+        string title = t_file.Tag.Title ?? "unknown";
+        string? year = t_file.Tag.Year > 0 ? t_file.Tag.Year.ToString() : "unknown";
+        string? album = t_file.Tag.Album ?? "unknown";
+        string? artist = t_file.Tag.Performers.Length > 0 ? t_file.Tag.Performers[0] : null;
+        track.Title = title;
+        track.Year = year;
+        track.Album = album;
+        track.Artist = artist;
+        track.Extension = file.Extension;
+        int i = file.Name.IndexOf(file.Extension);
+        track.Name = file.Name.Substring(0, i);
+        track.PathSours = file.FullName;
     }
 
 

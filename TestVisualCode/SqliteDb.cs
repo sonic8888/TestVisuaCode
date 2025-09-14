@@ -67,15 +67,8 @@ public class SqliteDb : Idb, IDisposable
             }
 
         }
-        catch (System.Exception ex)
-        {
-
-            Tools.DisplayColor(ex.Message, ConsoleColor.Red);
-        }
-
         finally
         {
-
             Connection?.Close();
         }
         return list;
@@ -99,11 +92,6 @@ public class SqliteDb : Idb, IDisposable
             }
 
         }
-        catch (System.Exception ex)
-        {
-
-            Tools.DisplayColor(ex.Message, ConsoleColor.Red);
-        }
         finally
         {
             Connection?.Close();
@@ -124,10 +112,53 @@ public class SqliteDb : Idb, IDisposable
             }
             rows = command.ExecuteNonQuery();
         }
-        catch (System.Exception ex)
+        finally
         {
+            Connection?.Close();
+        }
+        return rows;
+    }
 
-            Tools.DisplayColor(ex.Message, ConsoleColor.Red);
+    public static int WriteWithNull(string sql, SqliteConnection connection, IEnumerable<(string, string?)>? sqliteParameters = null)
+    {
+        int rows = -1;
+        try
+        {
+            connection?.Open();
+            SqliteCommand command = new SqliteCommand(sql, connection);
+            if (sqliteParameters != null)
+            {
+                foreach (var item in sqliteParameters)
+                {
+                    object? value = item.Item2;
+                    if (value == null) value = DBNull.Value;
+                    command.Parameters.AddWithValue(item.Item1, value);
+                }
+            }
+            rows = command.ExecuteNonQuery();
+        }
+        finally
+        {
+            connection?.Close();
+        }
+        return rows;
+    }
+
+    public int WriteWithoutNull(string sql, IEnumerable<(string, string?)>? sqliteParameters = null)
+    {
+        int rows = -1;
+        try
+        {
+            Connection?.Open();
+            SqliteCommand command = new SqliteCommand(sql, Connection);
+            if (sqliteParameters != null)
+            {
+                foreach (var item in sqliteParameters)
+                {
+                    command.Parameters.AddWithValue(item.Item1, item.Item2 ?? "unknown");
+                }
+            }
+            rows = command.ExecuteNonQuery();
         }
         finally
         {
@@ -155,6 +186,21 @@ public class SqliteDb : Idb, IDisposable
         }
         return sqliteParameters;
     }
+    // public static List<SqliteParameter> GetSqliteParameters(IEnumerable<(string, DBNull)> parameters)
+    // {
+    //     List<SqliteParameter> sqliteParameters = new List<SqliteParameter>();
+    //     if (parameters != null)
+    //     {
+    //         foreach (var item in parameters)
+    //         {
+    //             if (item.Item1 != null)
+    //             {
+    //                 sqliteParameters.Add(new SqliteParameter(item.Item1, item.Item2));
+    //             }
+    //         }
+    //     }
+    //     return sqliteParameters;
+    // }
 
     public static bool CreateDB(string pathDir)
     {

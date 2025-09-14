@@ -97,23 +97,23 @@ namespace TestVisualCode
         {
             try
             {
-                var tfile = TagLib.File.Create(Path.Combine(path_dir, track.Name + track.Extension));
-                tfile.Tag.Title = track.Title;
-                tfile.Tag.Album = track.Album;
-                try
+                var t_file = TagLib.File.Create(Path.Combine(path_dir, track.Name));
+                t_file.Tag.Title = track.Title;
+                t_file.Tag.Album = track.Album ?? "unknown";
+                if (track.Year != null)
                 {
-                    uint year = Convert.ToUInt32(track.Year);
-                    tfile.Tag.Year = year;
+                    try
+                    {
+                        uint year = Convert.ToUInt32(track.Year);
+                        t_file.Tag.Year = year;
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
-                catch (Exception)
-                {
 
-                    tfile.Tag.Year = 0;
-                }
-                tfile.Tag.Performers = new string[] { track.Artist! };
-                tfile.Tag.TrackCount = Convert.ToUInt32(track.TrackId);
-                tfile.Tag.DateTagged = DateTime.Now;
-                tfile.Save();
+                t_file.Tag.Performers = new string[] { track.Artist ?? "unknown" };
+                t_file.Save();
             }
             catch (Exception)
             {
@@ -313,16 +313,16 @@ namespace TestVisualCode
         /// <returns></returns>
         // private static string GetRandomTrackId(string pathDirDestination)
         // {
-        //     string _sours_db = Path.Combine(pathDirDestination, DbSqlite.NameMyDB);
-        //     string sql_conn = DbSqlite.Get_str_connection(_sours_db);
-        //     var list_trackId_destination = DbSqlite.ExecuteReader(sql_conn, DbSqlite.Dictionary_query["str13"]);
+        //     string sours_db_destination = SqliteDb.GetNameDbDefault(pathDirDestination);
+        //     var tracksIds = Tools.GetTrackIds(sours_db_destination);
         //     int trackId = -1;
+        //     string other = "other_";
         //     do
         //     {
         //         trackId = new Random().Next() * -1;
 
-        //     } while (list_trackId_destination.Contains(trackId.ToString()));
-        //     return trackId.ToString();
+        //     } while (tracksIds.Contains(other + trackId.ToString()));
+        //     return other + trackId.ToString();
         // }
 
         /// <summary>
@@ -485,7 +485,7 @@ namespace TestVisualCode
                 var tracks = YandexMusic.GetTracks(tracksIdDifferent, YandexMusic.PathDBSqlite!, YandexMusic.PathMusicSours!);
                 var list_error = new List<string>();
                 foreach (var track in tracks)
-                { 
+                {
                     var track_rename = Tools.Rename(track, Tools.PathDirDestination!);
                     var param = SqliteDb.GetSqliteParameters(new (string, string?)[]{("@name",track_rename.Name),("@title",track_rename.Title),
                    ("@artist",track_rename.Artist),("@album",track_rename.Album),("@year",track_rename.Year), ("@track_id",track_rename.TrackId),("@data",Track.Data()),});
@@ -496,8 +496,12 @@ namespace TestVisualCode
                         var param_delete = SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track_rename.TrackId) });
                         dbDestination.Write(Tools.Sql_queries["DeleteTrack"], param_delete);
                     }
-              
-                    Tools.DisplayColor(track_rename.Name,ConsoleColor.Green);
+                    else
+                    {
+                        CreateTags(track_rename, Tools.PathDirDestination!);
+                    }
+
+                    Tools.DisplayColor(track_rename.Name, ConsoleColor.Green);
                 }
             }
             finally
@@ -514,7 +518,7 @@ namespace TestVisualCode
             if (File.Exists(Path.Combine(Tools.PathDirDestination, SqliteDb.nameDb)))
             {
                 string soursDbDestination = SqliteDb.GetNameDbDefault(Tools.PathDirDestination);
-                var tracksIdDBDestination = Tools.GetTrackId(soursDbDestination);
+                var tracksIdDBDestination = Tools.GetTrackIds(soursDbDestination);
                 tracksIdDifferent = tracksIdDBYandex.Except(tracksIdDBDestination).ToList();
             }
             else
@@ -523,6 +527,75 @@ namespace TestVisualCode
                 tracksIdDifferent = tracksIdDBYandex;
             }
             return tracksIdDifferent;
+        }
+
+        internal static void AddFilesFromOtherDir()
+        {
+            if (!Directory.Exists(Tools.PathDirOther)) throw new ArgumentException($"Папка:{Tools.PathDirOther} не найдена.");
+            if (!File.Exists(Path.Combine(Tools.PathDirDestination!, SqliteDb.nameDb))) throw new ArgumentException($"БД:{Tools.PathDirDestination + SqliteDb.nameDb} не найдена.");
+            var files = new DirectoryInfo(Tools.PathDirOther!).GetFiles();
+            foreach (var item in files)
+            {
+                if (Tools.IsAudio(item))
+                {
+                    var track = Tools.GetTrackFromFile(item);
+                    if (track != null)
+                    {
+                        if (InsertDB(track))
+                        {
+                            if (Tools.Copy(track, Tools.PathDirDestination!))
+                            {
+                                CreateTags(track, Tools.PathDirDestination!);
+                            }
+                            else
+                            {
+                                SqliteDb? db = null;
+                                try
+                                {
+                                    db = new SqliteDb(SqliteDb.GetNameDbDefault(Tools.PathDirDestination!));
+                                    var param_delete = SqliteDb.GetSqliteParameters(new (string, string?)[] { ("@value", track.TrackId) });
+                                    db.Write(Tools.Sql_queries["DeleteTrack"], param_delete);
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    Tools.DisplayColor(ex.Message, ConsoleColor.Red, false);
+                                    Tools.DisplayColor(track.ToString(), ConsoleColor.Blue);
+                                }
+                                finally
+                                {
+                                    db?.Dispose();
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+        }
+
+        private static bool InsertDB(Track track)
+        {
+            bool isSuccessful = false;
+            SqliteDb? db = null;
+            try
+            {
+                db = new SqliteDb(SqliteDb.GetNameDbDefault(Tools.PathDirDestination!));
+                var parameters = new List<(string, string?)>() { ("@name", track.Name), ("@title", track.Title), ("@artist", track.Artist), ("@album", track.Album), ("@year", track.Year), ("@track_id", track.TrackId), ("@data", Track.Data()),("@sours","Other") };
+                var pows = db.WriteWithoutNull(Tools.Sql_queries["InsertTrackFromOther"], parameters);
+                isSuccessful = true;
+            }
+            catch (System.Exception ex)
+            {
+                Tools.DisplayColor(ex.Message, ConsoleColor.Red, false);
+                Tools.DisplayColor(track.ToString(), ConsoleColor.Blue);
+            }
+            finally
+            {
+                db?.Dispose();
+            }
+            return isSuccessful;
         }
     }
 }
