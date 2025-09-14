@@ -146,126 +146,9 @@ namespace TestVisualCode
 
         }
 
-        /// <summary>
-        /// Комбинирует имя трека и имя артиста.  
-        /// </summary>
-        /// <param name="track">класс Track</param>
-        /// <returns>имя трека + (артист)</returns>
-        private static string GetName(Track track) => $"{track.Name}{track.Extension}";
-
-        /// <summary>
-        /// Если файл с таким именем уже существует то 
-        /// к имени файла добавляем: (n).
-        /// </summary>
-        /// <param name="track"></param>
-        /// <returns></returns>
-        internal static Action<Track> RenameCopy(Track track)
-        {
-            int number = 1;
-            void CreateCopyName(Track track)
-            {
-                string copy = "(" + $"{number}" + ")";
-                string copy_1 = "(" + $"{number - 1}" + ")";
-                if (track.Name.EndsWith(copy_1))
-                {
-                    string name = track.Name;
-                    name = name.Replace(copy_1, "");
-                    track.Name = name;
-                }
-                track.Name = track.Name + copy;
-                number++;
-            }
-            return CreateCopyName;
-        }
 
 
-        /// <summary>
-        /// Копирует трек из папки источника(Яндекс Музыка) в папку назначения.
-        /// </summary>
-        /// <param name="track">AudioFilesWorkC_.Track</param>
-        /// <param name="sours">папка источник</param>
-        /// <param name="destination">папка назначение</param>
-        /// <param name="isException">false если было исключение</param>
-        /// <param name="isRename">изменяем имя трека или нет</param>
-        /// <param name="isOverwrite">true если файл надо перезаписывать</param>
-        /// <returns>System.IO.FileInfo скопированного трека</returns>
-        /// <exception cref="ArgumentException">если путь к папке назначения не существует</exception>
-        // public static FileInfo CopyTo(Track track, string? sours, string destination, out bool isException, bool isOverwrite = true)
-        // {
-        //     isException = true;
-        //     if (!Path.Exists(destination)) throw new ArgumentException($"Path:{destination} - There is no such way.");
-        //     string _sours = Path.Combine(sours!, track.TrackId + track.Extension);
-        //     string _destination = Path.Combine(destination, GetName(track));
-        //     FileInfo file_destination = new FileInfo(_destination);
-        //     if (file_destination.Exists)
-        //     {
-        //         var rename = RenameCopy(track);
-        //         do
-        //         {
-        //             rename(track);
-        //             _destination = Path.Combine(destination, GetName(track));
-        //             file_destination = new FileInfo(_destination);
 
-        //         }
-        //         while (file_destination.Exists);
-        //     }
-        //     FileInfo file_sours = new FileInfo(_sours);
-        //     try
-        //     {
-        //         if (file_sours.Exists)
-        //         { file_sours = file_sours.CopyTo(_destination, isOverwrite); }
-        //         else
-        //             throw new ArgumentException($"Path:{_sours} - не найден");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine(track);
-        //         Manager.DisplayColor(ex.Message, ConsoleColor.Magenta);
-        //         isException = false;
-        //     }
-        //     return file_sours;
-
-        // }
-
-
-        //public static FileInfo CopyFromTo(Track track, string? sours, string destination, out bool isException, bool isRename = true, bool isOverwrite = true)
-        //{
-        //    isException = true;
-        //    if (!Path.Exists(destination)) throw new ArgumentException($"Path:{destination} - There is no such way.");
-        //    string _sours = Path.Combine(sours!, track.Name + track.Extension);
-        //    string _destination = "";
-        //    if (isRename)
-        //        _destination = Path.Combine(destination, GetName(track));
-        //    else
-        //        _destination = Path.Combine(destination, track.Name + track.Extension);
-        //    FileInfo file = new FileInfo(_sours);
-
-        //    try
-        //    {
-        //        if (file.Exists)
-        //        { file = file.CopyTo(_destination, isOverwrite); }
-        //        else
-        //            throw new ArgumentException($"Path:{_destination} - there is no such file");
-        //    }
-        //    catch (IOException)
-        //    {
-        //        if (isOverwrite)
-        //        {
-        //            Manager.DisplayColor($"Трек '{track}' уже существует. Перезаписываем его.", ConsoleColor.Green);
-        //        }
-        //        else { Manager.DisplayColor($"Трек '{track}' уже существует. Не перезаписываем его.", ConsoleColor.Green); }
-
-        //        isException = false;
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        Manager.DisplayColor(ex.Message, ConsoleColor.Blue);
-        //        isException = false;
-        //    }
-        //    return file;
-
-        //}
 
         public static List<string> GetTrackId(string? data_sours)
         {
@@ -382,9 +265,6 @@ namespace TestVisualCode
             }
             return track_list;
         }
-
-
-
     }
 }
 
