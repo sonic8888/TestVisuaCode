@@ -42,7 +42,6 @@ namespace TestVisualCode
                         Manager.AddFilesFromYandexToDirDestination();
                         break;
                     case "d":
-                        string pathOther = "";
                         while (true)
                         {
                             Console.WriteLine("Укажите путь к папке c файлами для добавления:");
