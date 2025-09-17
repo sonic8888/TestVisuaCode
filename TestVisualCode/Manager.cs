@@ -2,6 +2,7 @@ using System;
 using System.Data.Common;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace TestVisualCode
@@ -10,7 +11,7 @@ namespace TestVisualCode
     {
         static string? action = "";
 
-        public static void PrintMessage()
+        public static async Task PrintMessage()
         {
             Console.WriteLine("Программа работы  с аудиофайлами Яндекс Музыка");
             while (true)
@@ -74,10 +75,9 @@ namespace TestVisualCode
                             {
                                 Console.WriteLine("Такого пути не существует.");
                             }
-
-                        
                         }
-                        Tools.ShuffleFiles();
+                        Task moveFiles = Tools.ShuffleFiles();
+                        moveFiles.Wait();
                         break;
                     default:
                         Console.WriteLine("действие выбрано не корректно:");

@@ -58,20 +58,24 @@ internal class Tools
         Console.ResetColor();
     }
 
-    public static void ShuffleFiles()
+    public static Task ShuffleFiles()
     {
-        if (PathDir != null)
+        void Move()
         {
-            var dir = new DirectoryInfo(PathDir);
-            var files = dir.GetFiles();
-            if (MoveTo(files))
+            if (PathDir != null)
             {
-                if (MoveBack())
+                var dir = new DirectoryInfo(PathDir);
+                var files = dir.GetFiles();
+                if (MoveTo(files))
                 {
-                    Console.WriteLine("Success");
+                    if (MoveBack())
+                    {
+                        Console.WriteLine("Success");
+                    }
                 }
             }
         }
+        return Task.Run(Move);
     }
     public static bool MoveTo(FileInfo[] files)
     {
@@ -107,6 +111,7 @@ internal class Tools
                 foreach (var file in files)
                 {
                     file.MoveTo(Path.Combine(PathDir!, file.Name));
+                    DisplayColor(file.Name, ConsoleColor.Green);
                 }
                 isSuccess = true;
             }
