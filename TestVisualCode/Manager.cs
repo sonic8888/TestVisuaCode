@@ -33,6 +33,7 @@ namespace TestVisualCode
                 Console.WriteLine("Выберите действие:");
                 Console.WriteLine("y - копирование файлов из Яндекс Музыка в указанную папку.");
                 Console.WriteLine("d - добавление файлов из выбранной папки в  указанную папку");
+                Console.WriteLine("s - перемешать файлы");
                 Console.WriteLine("e - для завершения работы");
                 action = Console.ReadLine();
                 switch (action)
@@ -58,6 +59,26 @@ namespace TestVisualCode
                         break;
                     case "e":
                         isWork = false;
+                        break;
+
+                    case "s":
+                        while (true)
+                        {
+                            Console.WriteLine("Укажите путь к папке или диску c файлами:");
+                            var path = Console.ReadLine();
+                            if (path != null) Tools.PathDir = path;
+                            if (Path.Exists(Tools.PathDir))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Такого пути не существует.");
+                            }
+
+                        
+                        }
+                        Tools.ShuffleFiles();
                         break;
                     default:
                         Console.WriteLine("действие выбрано не корректно:");

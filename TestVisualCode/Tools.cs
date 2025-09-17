@@ -9,6 +9,8 @@ namespace TestVisualCode;
 internal class Tools
 {
     internal static string? Kind = "5";
+    internal static string? PathDir = null;
+    static string? newTempFolderPath = null;
     internal static string? PathDirDestination = @"D:\test";
     internal static string? PathDirOther = @"D:\testDb";
     private static string Pattern = @"[\*\|\\\:\""<>\?\/]";
@@ -54,6 +56,70 @@ internal class Tools
             Console.Write($"{message}: ");
         }
         Console.ResetColor();
+    }
+
+    public static void ShuffleFiles()
+    {
+        if (PathDir != null)
+        {
+            var dir = new DirectoryInfo(PathDir);
+            var files = dir.GetFiles();
+            if (MoveTo(files))
+            {
+                if (MoveBack())
+                {
+                    Console.WriteLine("Success");
+                }
+            }
+        }
+    }
+    public static bool MoveTo(FileInfo[] files)
+    {
+        string tempPath = Path.GetTempPath();
+        newTempFolderPath = Path.Combine(tempPath, "MyAppData");
+        bool isSuccess = false;
+        try
+        {
+            var tempDir = Directory.CreateDirectory(newTempFolderPath);
+            foreach (var file in files)
+            {
+                file.MoveTo(Path.Combine(newTempFolderPath, file.Name));
+            }
+            isSuccess = true;
+        }
+        catch (System.Exception ex)
+        {
+            DisplayColor(ex.Message, ConsoleColor.Red);
+        }
+        return isSuccess;
+    }
+
+    public static bool MoveBack()
+    {
+        bool isSuccess = false;
+        if (newTempFolderPath != null)
+        {
+            try
+            {
+                var tempDir = Directory.CreateDirectory(newTempFolderPath);
+                var files = tempDir.GetFiles();
+                Random.Shared.Shuffle(files);
+                foreach (var file in files)
+                {
+                    file.MoveTo(Path.Combine(PathDir!, file.Name));
+                }
+                isSuccess = true;
+            }
+            catch (System.Exception ex)
+            {
+                DisplayColor(ex.Message, ConsoleColor.Red);
+            }
+            finally
+            {
+                Directory.Delete(newTempFolderPath);
+            }
+        }
+        return isSuccess;
     }
 
 
