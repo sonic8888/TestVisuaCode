@@ -76,8 +76,7 @@ namespace TestVisualCode
                                 Console.WriteLine("Такого пути не существует.");
                             }
                         }
-                        Task moveFiles = Tools.ShuffleFiles();
-                        moveFiles.Wait();
+                        await Tools.ShuffleFiles();
                         break;
                     default:
                         Console.WriteLine("действие выбрано не корректно:");
