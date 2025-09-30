@@ -25,6 +25,7 @@ namespace TestVisualCode
         /// Путь к источнику файла (может быть null)
         /// </summary>
         public string? PathSours { get; set; }
+        public string? SourceFail { get; set; }
 
         /// <summary>
         /// Имя файла (по умолчанию пустая строка)
@@ -79,10 +80,7 @@ namespace TestVisualCode
         /// </summary>
         public string? DataCreate { get; set; }
 
-        /// <summary>
-        /// Флаг существования файла (по умолчанию false)
-        /// </summary>
-        public bool IsExist{get;set;}=false;
+
 
         /// <summary>
         /// Пустой конструктор по умолчанию
@@ -95,7 +93,7 @@ namespace TestVisualCode
         /// <returns>Строка с форматированными данными трека</returns>
         public override string ToString()
         {
-            return $"Name:{Name}, Title:{Title}, Artist:{Artist}, Album:{Album}, Year:{Year}, TrackId:{TrackId}),  AlbumId:{AlbumId}, DataCreate:{DataCreate}, IsExist:{IsExist}, Extension:{Extension}";
+            return $"Name:{Name}, Title:{Title}, Artist:{Artist}, Album:{Album}, Year:{Year}, TrackId:{TrackId}),  AlbumId:{AlbumId}, DataCreate:{DataCreate},  Extension:{Extension}";
         }
 
         /// <summary>

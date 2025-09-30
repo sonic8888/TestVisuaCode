@@ -257,7 +257,6 @@ namespace TestVisualCode
                                 if (YandexMusic.IsExist(path_dir, track.TrackId, out string extension, out string path))
                                 {
                                     track.Extension = extension;
-                                    track.IsExist = true;
                                     track.PathSours = path;
                                 }
                                 track.DataCreate = Track.Data();
